@@ -21,7 +21,7 @@ var/
 *.egg
 
 #Virtual Env
-apienv/
+*venv/
 
 # Installer logs
 pip-log.txt
