@@ -13,9 +13,19 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from django.conf.urls import include, url
-from django.contrib import admin
+from django.conf.urls import url, include
+from rest_framework import routers
+from astute_auth.auth_service import views
 
+router = routers.DefaultRouter()
+#router.register(r'auth', views.auth)
+
+
+# Wire up our API using automatic URL routing.
+# Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^', include(router.urls)),
+	url(r'^auth/', views.auth),
+	url(r'^noauth/', views.noauth),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
