@@ -45,11 +45,10 @@ def token(request):
 			return Response(status=status.HTTP_401_UNAUTHORIZED, headers={"Access-Control-Allow-Origin": "*"})
 		else:
 			claims = {'email': email, 'permissions': list(user.get_all_permissions())}
-			token = generate_jwt(claims, settings.HMAC_SECRET, 'HS512', datetime.timedelta(days=365))
-			response = {'token':token}
+			jwt = generate_jwt(claims, settings.HMAC_SECRET, 'HS512', datetime.timedelta(days=365))
+			response = {'token':jwt}
 			return Response(response, status=status.HTTP_201_CREATED, headers={"Access-Control-Allow-Origin": "*"})
 	else:
 		user = User.objects.create_user(username=email, email=email, password=password)
-		user.save()
 		# TODO: send verification email
 		return Response(status=status.HTTP_202_ACCEPTED, headers={"Access-Control-Allow-Origin": "*"})
