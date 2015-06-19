@@ -4,7 +4,7 @@ from jwt import verify_jwt
 from rest_framework.test import APITestCase
 from rest_framework import status
 from astute_auth import settings
-
+import json
 
 class TokenTestCase(APITestCase):
     email = 'myemail@domain.com'
@@ -36,7 +36,7 @@ class TokenTestCase(APITestCase):
         # authenticate
         resp = self.client.post('/token/', data={'email': self.email, 'password': self.password})
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-        token = resp.data['token']
+        token = json.loads(resp.content)['token']
         header, claims = verify_jwt(token, settings.HMAC_SECRET, ['HS512'])
         self.assertEqual(claims['email'], self.email)
         self.assertEqual(header['alg'], u'HS512')

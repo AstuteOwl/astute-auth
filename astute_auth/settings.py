@@ -39,17 +39,20 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rest_framework',
     'astute_auth.auth_service',
-    'rest_framework_swagger'
+    'rest_framework_swagger',
+    'corsheaders'
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.security.SecurityMiddleware',
 )
 
 ROOT_URLCONF = 'astute_auth.urls'
+CORS_ORIGIN_ALLOW_ALL = True
 
 TEMPLATES = [
     {
