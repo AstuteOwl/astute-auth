@@ -40,3 +40,9 @@ class TokenTestCase(APITestCase):
         header, claims = verify_jwt(token, settings.HMAC_SECRET, ['HS512'])
         self.assertEqual(claims['email'], self.email)
         self.assertEqual(header['alg'], u'HS512')
+
+
+class PingTestCase(APITestCase):
+    def test_ping_get(self):
+        resp = self.client.get('/ping')
+        self.assertEqual('pong', resp.data)

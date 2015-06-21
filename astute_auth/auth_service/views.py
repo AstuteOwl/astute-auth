@@ -38,3 +38,9 @@ def token(request):
 		user = User.objects.create_user(username=email, email=email, password=password)
 		# TODO: send verification email
 		return Response(status=status.HTTP_202_ACCEPTED)
+
+
+@api_view(['GET'])
+@csrf_exempt
+def ping(request):
+	return Response(data="pong", status=status.HTTP_200_OK)
