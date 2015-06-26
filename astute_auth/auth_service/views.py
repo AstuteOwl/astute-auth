@@ -30,12 +30,17 @@ def token(request):
 		if user is None:
 			return Response(status=status.HTTP_401_UNAUTHORIZED)
 		else:
-			claims = {'email': email, 'permissions': list(user.get_all_permissions())}
-			jwt = generate_jwt(claims, settings.HMAC_SECRET, 'HS512', datetime.timedelta(days=365))
-			response_data = {'token':jwt}
-			return JsonResponse(response_data, status=status.HTTP_201_CREATED)
+			if user.is_active:
+				claims = {'email': email, 'permissions': list(user.get_all_permissions())}
+				jwt = generate_jwt(claims, settings.HMAC_SECRET, 'HS512', datetime.timedelta(days=365))
+				response_data = {'token':jwt}
+				return JsonResponse(response_data, status=status.HTTP_201_CREATED)
+			else:
+				return Response(status=status.HTTP_202_ACCEPTED)
 	else:
 		user = User.objects.create_user(username=email, email=email, password=password)
+		user.is_active = False
+		user.save()
 		# TODO: send verification email
 		return Response(status=status.HTTP_202_ACCEPTED)
 

@@ -21,18 +21,21 @@ class TokenTestCase(APITestCase):
         self.assertIsNotNone(user)
         user = authenticate(username=self.email, password=self.password)
         self.assertIsNotNone(user)
+        self.assertEqual(False, user.is_active)
 
     def test_existing_account_bad_password(self):
         bad_password = "bad_password"
         # create the account
-        self.client.post('/token/', data={'email': self.email, 'password': self.password})
+        User.objects.create_user(self.email, self.email, self.password)
         # authenticate w/bad password
         resp = self.client.post('/token/', data={'email': self.email, 'password': bad_password})
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_existing_account_success(self):
+    def test_existing_active_account_correct_password(self):
         # create the account
-        self.client.post('/token/', data={'email': self.email, 'password': self.password})
+        user = User.objects.create_user(self.email, self.email, self.password)
+        user.is_active = True
+        user.save()
         # authenticate
         resp = self.client.post('/token/', data={'email': self.email, 'password': self.password})
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
@@ -40,6 +43,15 @@ class TokenTestCase(APITestCase):
         header, claims = verify_jwt(token, settings.HMAC_SECRET, ['HS512'])
         self.assertEqual(claims['email'], self.email)
         self.assertEqual(header['alg'], u'HS512')
+
+    def test_existing_inactive_account_correct_password(self):
+        # create the inactive account
+        user = User.objects.create_user(self.email, self.email, self.password)
+        user.is_active = False
+        user.save()
+        # authenticate
+        resp = self.client.post('/token/', data={'email': self.email, 'password': self.password})
+        self.assertEqual(resp.status_code, status.HTTP_202_ACCEPTED)
 
 
 class PingTestCase(APITestCase):
