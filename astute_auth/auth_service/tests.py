@@ -1,3 +1,4 @@
+from astute_auth.auth_service.models import UserVerification
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from jwt import verify_jwt
@@ -22,6 +23,8 @@ class TokenTestCase(APITestCase):
         user = authenticate(username=self.email, password=self.password)
         self.assertIsNotNone(user)
         self.assertEqual(False, user.is_active)
+        user_verification = UserVerification.objects.filter(email=self.email)
+        self.assertIsNotNone(user_verification)
 
     def test_existing_account_bad_password(self):
         bad_password = "bad_password"

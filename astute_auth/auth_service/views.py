@@ -1,4 +1,5 @@
 import datetime
+import random
 
 from astute_auth.auth_service.request_serializers import TokenRequestSerializer
 from django.contrib.auth import authenticate
@@ -11,6 +12,8 @@ from rest_framework.decorators import api_view
 from jwt import generate_jwt
 from astute_auth import settings
 from rest_framework.response import Response
+
+from models import UserVerification
 
 
 @api_view(['POST'])
@@ -41,6 +44,12 @@ def token(request):
 		user = User.objects.create_user(username=email, email=email, password=password)
 		user.is_active = False
 		user.save()
+
+		rng = random.SystemRandom()
+		key = rng.randint(1000000, 2000000000)
+		user_verification = UserVerification(email=email, validation_key=key)
+		user_verification.save()
+
 		# TODO: send verification email
 		return Response(status=status.HTTP_202_ACCEPTED)
 
