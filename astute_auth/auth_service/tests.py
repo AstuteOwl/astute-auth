@@ -60,4 +60,4 @@ class TokenTestCase(APITestCase):
 class PingTestCase(APITestCase):
 	def test_ping_get(self):
 		resp = self.client.get('/ping')
-		self.assertEqual('pong', resp.data)
+		self.assertEqual('pong!', resp.data)
