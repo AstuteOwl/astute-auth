@@ -57,4 +57,4 @@ def token(request):
 @api_view(['GET'])
 @csrf_exempt
 def ping(request):
-	return Response(data="pong!", status=status.HTTP_200_OK)
+	return Response(data="pong", status=status.HTTP_200_OK)
