@@ -24,7 +24,7 @@ def token(request):
 
 	if not token_serializer.is_valid():
 		return JsonResponse(status=status.HTTP_400_BAD_REQUEST)
-	
+
 	email = token_serializer.validated_data['email']
 	password = token_serializer.validated_data['password']
 
@@ -57,4 +57,4 @@ def token(request):
 @api_view(['GET'])
 @csrf_exempt
 def ping(request):
-	return Response(data="pong", status=status.HTTP_200_OK)
+	return Response(data="pong!", status=status.HTTP_200_OK)
