@@ -18,4 +18,4 @@ If using Heroku you'll need to configure a few secrets and addons. This will als
 	echo DATABASE_URL='$DATABASE_URL' >> .env
 	echo ASTUTE_AUTH_SECRET_KEY='$ASTUTE_AUTH_SECRET_KEY' >> .env
 	echo HMAC_SECRET_KEY='$HMAC_SECRET_KEY' >> .env
-
+	echo MANDRILL_APIKEY=`heroku config:get MANDRILL_APIKEY` >> .env
