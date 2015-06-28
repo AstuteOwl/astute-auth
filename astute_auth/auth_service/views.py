@@ -1,5 +1,6 @@
 import datetime
 import random
+from VerificationEmail import VerificationEmail
 
 from astute_auth.auth_service.request_serializers import TokenRequestSerializer
 from django.contrib.auth import authenticate
@@ -50,7 +51,8 @@ def token(request):
 		user_verification = UserVerification(email=email, validation_key=key)
 		user_verification.save()
 
-		# TODO: send verification email
+		VerificationEmail.send(email, key)
+
 		return Response(status=status.HTTP_202_ACCEPTED)
 
 

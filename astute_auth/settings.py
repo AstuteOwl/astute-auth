@@ -21,6 +21,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ['ASTUTE_AUTH_SECRET_KEY']
 HMAC_SECRET = os.environ['HMAC_SECRET_KEY']
+MANDRILL_APIKEY = os.environ['MANDRILL_APIKEY']
+VALIDATION_EMAIL_FROM = os.environ['VALIDATION_EMAIL_FROM']
+VALIDATION_EMAIL_FROM_NAME = os.environ['VALIDATION_EMAIL_FROM_NAME']
+VALIDATION_EMAIL_SUBJECT = os.environ['VALIDATION_EMAIL_SUBJECT']
+VALIDATION_EMAIL_BODY = os.environ['VALIDATION_EMAIL_BODY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
