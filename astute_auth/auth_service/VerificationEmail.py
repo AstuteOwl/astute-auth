@@ -12,7 +12,7 @@ class VerificationEmail:
 		message = {
 			'from_email': settings.VALIDATION_EMAIL_FROM,
 			'from_name': settings.VALIDATION_EMAIL_FROM_NAME,
-			'html': settings.VALIDATION_EMAIL_BODY.format(validation_key=validation_key),
+			'html': settings.VALIDATION_EMAIL_BODY.format(email=email, validation_key=validation_key),
 			'subject': settings.VALIDATION_EMAIL_SUBJECT,
 			'to': [
 				{
