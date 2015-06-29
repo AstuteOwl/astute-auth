@@ -1,3 +1,4 @@
+import random
 from astute_auth.auth_service.models import UserVerification
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -6,6 +7,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from astute_auth import settings
 import json
+
 
 class TokenTestCase(APITestCase):
 	email = 'myemail@domain.com'
@@ -61,3 +63,33 @@ class PingTestCase(APITestCase):
 	def test_ping_get(self):
 		resp = self.client.get('/ping')
 		self.assertEqual('pong', resp.data)
+
+
+class VerifyTestCase(APITestCase):
+	email = "newaccount@foo.com"
+	password = "password"
+
+	def test_verification_bad_request(self):
+		resp = self.client.post('/verify/', data={'email': self.email})
+		self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+	def test_verification_invalid(self):
+		resp = self.client.post('/verify/', data={'email': self.email, 'validation_key': 12345})
+		self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+	def test_verification_valid(self):
+		user = User.objects.create_user(self.email, self.email, self.password)
+		user.is_active = False
+		user.save()
+
+		rng = random.SystemRandom()
+		validation_key = rng.randint(1000000, 2000000000)
+
+		user_verification = UserVerification(email=self.email, validation_key=validation_key)
+		user_verification.save()
+		resp = self.client.post('/verify/', data={'email': self.email, 'validation_key': validation_key})
+		self.assertEqual(resp.status_code, status.HTTP_200_OK)
+		self.assertFalse(UserVerification.objects.filter(email=self.email, validation_key=validation_key).exists())
+
+		user = User.objects.get(username=self.email)
+		self.assertTrue(user.is_active)

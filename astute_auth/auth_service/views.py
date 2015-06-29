@@ -2,7 +2,7 @@ import datetime
 import random
 from VerificationEmail import VerificationEmail
 
-from astute_auth.auth_service.request_serializers import TokenRequestSerializer
+from astute_auth.auth_service.request_serializers import TokenRequestSerializer, VerificationRequestSerializer
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.http import JsonResponse
@@ -24,7 +24,7 @@ def token(request):
 	token_serializer = TokenRequestSerializer(data=data)
 
 	if not token_serializer.is_valid():
-		return JsonResponse(status=status.HTTP_400_BAD_REQUEST)
+		return Response(status=status.HTTP_400_BAD_REQUEST)
 
 	email = token_serializer.validated_data['email']
 	password = token_serializer.validated_data['password']
@@ -55,6 +55,28 @@ def token(request):
 
 		return Response(status=status.HTTP_202_ACCEPTED)
 
+
+@api_view(['POST'])
+@csrf_exempt
+def verify(request):
+	data = JSONParser().parse(request)
+	verification_key_serializer = VerificationRequestSerializer(data=data)
+
+	if not verification_key_serializer.is_valid():
+		return Response(status=status.HTTP_400_BAD_REQUEST)
+
+	email = verification_key_serializer.validated_data['email']
+	validation_key = verification_key_serializer.validated_data['validation_key']
+
+	if UserVerification.objects.filter(email=email, validation_key=validation_key).exists():
+		user_verification = UserVerification.objects.get(email=email, validation_key=validation_key)
+		user = User.objects.get(username=user_verification.email)
+		user.is_active = True
+		user.save()
+		user_verification.delete()
+		return Response(status=status.HTTP_200_OK)
+	else:
+		return Response(status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 @csrf_exempt

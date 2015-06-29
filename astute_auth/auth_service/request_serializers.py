@@ -9,3 +9,14 @@ class TokenRequestSerializer(serializers.Serializer):
 
 	def create(self, validated_data):
 		pass
+
+
+class VerificationRequestSerializer(serializers.Serializer):
+	email = serializers.EmailField(required=True, allow_blank=False, max_length=254)
+	validation_key = serializers.IntegerField(required=True)
+
+	def update(self, instance, validated_data):
+		pass
+
+	def create(self, validated_data):
+		pass
