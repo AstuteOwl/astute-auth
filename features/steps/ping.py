@@ -9,7 +9,7 @@ def have_the_resource(context, resource):
 
 @step('I call the Astute-Auth Service')
 def call_the_astute_auth_service(context):
-	headers = {'content-type': 'application/json'}
+	headers = {'accept': 'application/json'}
 	response = requests.get("https://test-astute-auth.herokuapp.com/{}".format(context.resource_name), headers)
 	context.response = response.text
 
