@@ -45,7 +45,8 @@ INSTALLED_APPS = (
 	'rest_framework',
 	'astute_auth.auth_service',
 	'rest_framework_swagger',
-	'corsheaders'
+	'corsheaders',
+	'behave_django',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -102,6 +103,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = ()
 
 # Parse database configuration from $DATABASE_URL
 import dj_database_url
