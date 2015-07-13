@@ -28,7 +28,7 @@ VALIDATION_EMAIL_SUBJECT = os.environ['VALIDATION_EMAIL_SUBJECT']
 VALIDATION_EMAIL_BODY = os.environ['VALIDATION_EMAIL_BODY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ['DEBUG']
 
 ALLOWED_HOSTS = []
 

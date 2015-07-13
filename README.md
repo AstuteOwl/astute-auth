@@ -9,6 +9,7 @@ If using Heroku you'll need to configure a few secrets and addons. This will als
 	ASTUTE_AUTH_SECRET_KEY=somereallylongsecretkeythatisnotwhatyouseehere
 	HMAC_SECRET_KEY=anotherlongkeytobeusedingeneratingthehmac
 	DATABASE_URL=postgress://username:password@localhost/somedb
+	DEBUG=False
 	VALIDATION_EMAIL_FROM=noreply@yourdomain.com
 	VALIDATION_EMAIL_FROM_NAME=My App
 	VALIDATION_EMAIL_SUBJECT=My email subject
@@ -17,6 +18,7 @@ If using Heroku you'll need to configure a few secrets and addons. This will als
 	heroku addons:create mandrill:starter
 	heroku config:set ASTUTE_AUTH_SECRET_KEY=$ASTUTE_AUTH_SECRET_KEY
 	heroku config:set HMAC_SECRET_KEY=$HMAC_SECRET_KEY
+	heroku config:set DEBUG=$DEBUG
 	heroku config:set VALIDATION_EMAIL_FROM=$VALIDATION_EMAIL_FROM
 	heroku config:set VALIDATION_EMAIL_FROM_NAME=$VALIDATION_EMAIL_FROM_NAME
 	heroku config:set VALIDATION_EMAIL_SUBJECT=$VALIDATION_EMAIL_SUBJECT
@@ -26,6 +28,7 @@ If using Heroku you'll need to configure a few secrets and addons. This will als
 	echo DATABASE_URL='$DATABASE_URL' >> .env
 	echo ASTUTE_AUTH_SECRET_KEY='$ASTUTE_AUTH_SECRET_KEY' >> .env
 	echo HMAC_SECRET_KEY='$HMAC_SECRET_KEY' >> .env
+	echo DEBUG='$DEBUG' >> .env
 	echo MANDRILL_APIKEY=`heroku config:get MANDRILL_APIKEY` >> .env
 	echo VALIDATION_EMAIL_FROM='$VALIDATION_EMAIL_FROM' >> .env
 	echo VALIDATION_EMAIL_FROM_NAME='$VALIDATION_EMAIL_FROM_NAME' >> .env
