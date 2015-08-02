@@ -1,5 +1,5 @@
 import random
-from astute_auth.auth_service.models import UserVerification
+from astute_auth.auth_service.models import UserVerification, UserClaim
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from jwt import verify_jwt
@@ -11,13 +11,14 @@ import json
 
 class TokenTestCase(APITestCase):
 	email = 'myemail@domain.com'
+	email_with_claims = 'myclaimsemail@foo.com'
 	password = 'my_password'
 
 	def test_no_username_or_password_400(self):
 		resp = self.client.post('/token/')
 		self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-	def test_new_account(self):
+	def test_new_account_no_claims(self):
 		resp = self.client.post('/token/', data={'email': self.email, 'password': self.password})
 		self.assertEqual(resp.status_code, status.HTTP_202_ACCEPTED)
 		user = User.objects.get(username=self.email)
@@ -27,6 +28,26 @@ class TokenTestCase(APITestCase):
 		self.assertEqual(False, user.is_active)
 		user_verification = UserVerification.objects.filter(email=self.email)
 		self.assertIsNotNone(user_verification)
+
+	def test_new_account_with_claims(self):
+		claims = {
+			'first claim': 'first value',
+			'second claim': 'second value',
+		}
+		resp = self.client.post(
+			'/token/', data={'email': self.email_with_claims, 'password': self.password, 'claims': claims})
+		self.assertEqual(resp.status_code, status.HTTP_202_ACCEPTED)
+		user = User.objects.get(username=self.email_with_claims)
+		self.assertIsNotNone(user)
+		user = authenticate(username=self.email_with_claims, password=self.password)
+		self.assertIsNotNone(user)
+		self.assertEqual(False, user.is_active)
+		user_verification = UserVerification.objects.filter(email=self.email_with_claims)
+		self.assertIsNotNone(user_verification)
+		actual_claims = list(UserClaim.objects.filter(email=self.email_with_claims).order_by('claim_name'))
+		self.assertEqual(len(claims), len(actual_claims))
+		for actual_claim in actual_claims:
+			self.assertEqual(claims[actual_claim.claim_name], actual_claim.claim_value)
 
 	def test_existing_account_bad_password(self):
 		bad_password = "bad_password"
@@ -41,12 +62,15 @@ class TokenTestCase(APITestCase):
 		user = User.objects.create_user(self.email, self.email, self.password)
 		user.is_active = True
 		user.save()
+		claim = UserClaim(email=self.email, claim_name='foo', claim_value='bar')
+		claim.save()
 		# authenticate
 		resp = self.client.post('/token/', data={'email': self.email, 'password': self.password})
 		self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 		token = json.loads(resp.content)['token']
 		header, claims = verify_jwt(token, settings.HMAC_SECRET, ['HS512'])
 		self.assertEqual(claims['email'], self.email)
+		self.assertEqual(claims[claim.claim_name], claim.claim_value)
 		self.assertEqual(header['alg'], u'HS512')
 
 	def test_existing_inactive_account_correct_password(self):

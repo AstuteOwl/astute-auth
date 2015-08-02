@@ -1,8 +1,10 @@
 from rest_framework import serializers
 
+
 class TokenRequestSerializer(serializers.Serializer):
 	email = serializers.CharField(required=True, allow_blank=False, max_length=254)
 	password = serializers.CharField(required=True, allow_blank=False, max_length=254)
+	claims = serializers.DictField(required=False, child=serializers.CharField())
 
 	def update(self, instance, validated_data):
 		pass

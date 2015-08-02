@@ -9,3 +9,14 @@ class UserVerification(models.Model):
 		index_together = [
 			("email", "validation_key"),
 		]
+
+
+class UserClaim(models.Model):
+	email = models.EmailField(max_length=254, db_index=True)
+	claim_name = models.CharField(max_length=50, db_index=True)
+	claim_value = models.CharField(max_length=254)
+
+	class Meta:
+		index_together = [
+			("email", "claim_name")
+		]

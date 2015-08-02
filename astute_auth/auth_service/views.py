@@ -14,7 +14,7 @@ from jwt import generate_jwt
 from astute_auth import settings
 from rest_framework.response import Response
 
-from models import UserVerification
+from models import UserVerification, UserClaim
 
 
 @api_view(['POST'])
@@ -35,7 +35,14 @@ def token(request):
 			return Response(status=status.HTTP_401_UNAUTHORIZED)
 		else:
 			if user.is_active:
-				claims = {'email': email, 'permissions': list(user.get_all_permissions())}
+				# assign claims
+				claims = {}
+				claim_set = UserClaim.objects.filter(email=email)
+				for claim in claim_set:
+					claims[claim.claim_name] = claim.claim_value
+				claims['email'] = email
+
+				# Generate the JWT
 				jwt = generate_jwt(claims, settings.HMAC_SECRET, 'HS512', datetime.timedelta(days=365))
 				response_data = {'token':jwt}
 				return JsonResponse(response_data, status=status.HTTP_201_CREATED)
@@ -46,12 +53,20 @@ def token(request):
 		user.is_active = False
 		user.save()
 
+		# Generate the verification key and email
 		rng = random.SystemRandom()
 		key = rng.randint(1000000, 2000000000)
 		user_verification = UserVerification(email=email, validation_key=key)
 		user_verification.save()
 
 		VerificationEmail.send(email, key)
+
+		# Store any registration claims
+		if 'claims' in token_serializer.validated_data.keys():
+			claims = token_serializer.validated_data['claims']
+			for claim_name in claims:
+				user_claim = UserClaim(email=email, claim_name=claim_name, claim_value=claims[claim_name])
+				user_claim.save()
 
 		return Response(status=status.HTTP_202_ACCEPTED)
 
