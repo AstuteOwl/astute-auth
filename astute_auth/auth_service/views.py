@@ -107,8 +107,11 @@ def prospects(request):
 
 	email = prospect_serializer.validated_data['email']
 	if not Prospect.objects.filter(email=email).exists():
+		client_ip = request.META.get('HTTP_X_FORWARDED_FOR')
+		if not client_ip:
+			client_ip = request.META.get('REMOTE_ADDR')
 		prospect = Prospect(
-			email=email, request_when=datetime.datetime.utcnow(), remote_addr=request.META.get('REMOTE_ADDR'))
+			email=email, request_when=datetime.datetime.utcnow(), remote_addr=client_ip)
 		prospect.save()
 		ProspectEmail.send(email)
 
