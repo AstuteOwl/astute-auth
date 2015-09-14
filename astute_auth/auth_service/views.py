@@ -1,8 +1,10 @@
 import datetime
 import random
 from VerificationEmail import VerificationEmail
+from astute_auth.auth_service.ProspectEmail import ProspectEmail
 
-from astute_auth.auth_service.request_serializers import TokenRequestSerializer, VerificationRequestSerializer
+from astute_auth.auth_service.request_serializers import TokenRequestSerializer, VerificationRequestSerializer, \
+	ProspectRequestSerializer
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.http import JsonResponse
@@ -14,7 +16,7 @@ from jwt import generate_jwt
 from astute_auth import settings
 from rest_framework.response import Response
 
-from models import UserVerification, UserClaim
+from models import UserVerification, UserClaim, Prospect
 
 
 @api_view(['POST'])
@@ -92,6 +94,26 @@ def verify(request):
 		return Response(status=status.HTTP_200_OK)
 	else:
 		return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+@csrf_exempt
+def prospects(request):
+	data = JSONParser().parse(request)
+	prospect_serializer = ProspectRequestSerializer(data=data)
+
+	if not prospect_serializer.is_valid():
+		return Response(status=status.HTTP_400_BAD_REQUEST)
+
+	email = prospect_serializer.validated_data['email']
+	if not Prospect.objects.filter(email=email).exists():
+		prospect = Prospect(
+			email=email, request_when=datetime.datetime.utcnow(), remote_addr=request.META.get('REMOTE_ADDR'))
+		prospect.save()
+		ProspectEmail.send(email)
+
+	return Response(status=status.HTTP_200_OK)
+
 
 @api_view(['GET'])
 @csrf_exempt

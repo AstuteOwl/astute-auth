@@ -117,3 +117,15 @@ class VerifyTestCase(APITestCase):
 
 		user = User.objects.get(username=self.email)
 		self.assertTrue(user.is_active)
+
+
+class ProspectsTestCase(APITestCase):
+	email = "interested@whatever.com"
+
+	def test_prospects_bad_request(self):
+		resp = self.client.post('/prospects/')
+		self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+	def test_prospects_valid(self):
+		resp = self.client.post('/prospects/', data={'email': self.email})
+		self.assertEqual(resp.status_code, status.HTTP_200_OK)

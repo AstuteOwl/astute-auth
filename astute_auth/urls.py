@@ -28,6 +28,7 @@ urlpatterns = [
 	url(r'^token', views.token),
 	url(r'^verify', views.verify),
 	url(r'^ping', views.ping),
+	url(r'^prospects', views.prospects),
 	url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 	url(r'^docs/', include('rest_framework_swagger.urls')),
 ]

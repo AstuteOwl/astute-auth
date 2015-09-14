@@ -20,3 +20,9 @@ class UserClaim(models.Model):
 		index_together = [
 			("email", "claim_name")
 		]
+
+
+class Prospect(models.Model):
+	email = models.EmailField(max_length=254, db_index=True)
+	request_when = models.DateTimeField()
+	remote_addr = models.GenericIPAddressField()

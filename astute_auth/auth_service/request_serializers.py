@@ -22,3 +22,13 @@ class VerificationRequestSerializer(serializers.Serializer):
 
 	def create(self, validated_data):
 		pass
+
+
+class ProspectRequestSerializer(serializers.Serializer):
+	email = serializers.EmailField(required=True, allow_blank=False, max_length=254)
+
+	def update(self, instance, validated_data):
+		pass
+
+	def create(self, validated_data):
+		pass
